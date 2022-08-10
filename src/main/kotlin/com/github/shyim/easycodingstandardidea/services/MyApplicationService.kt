@@ -1,6 +1,6 @@
-package org.jetbrains.plugins.template.services
+package com.github.shyim.easycodingstandardidea.services
 
-import org.jetbrains.plugins.template.MyBundle
+import com.github.shyim.easycodingstandardidea.MyBundle
 
 class MyApplicationService {
 
