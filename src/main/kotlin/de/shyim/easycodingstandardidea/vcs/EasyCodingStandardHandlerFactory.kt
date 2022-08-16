@@ -32,7 +32,7 @@ class EasyCodingStandardHandler(val myProject: Project, val panel: CheckinProjec
         var foundPhpFile = false
 
         this.panel.virtualFiles.forEach {
-            if (it.fileType.name == "PHP") {
+            if (it.extension == "php") {
                 foundPhpFile = true
             }
         }
@@ -75,15 +75,18 @@ class EasyCodingStandardHandler(val myProject: Project, val panel: CheckinProjec
             val isSuccess = ProgressManager.getInstance().runProcessWithProgressSynchronously(
                 ThrowableComputable<Boolean, RuntimeException> {
                     val projectBasePath: VirtualFile = getBasePathAsVirtualFile(project) ?: return@ThrowableComputable false
-                    val files: String = virtualFiles
-                        .filter { it.fileType.name == "PHP" }
+                    val files = virtualFiles
+                        .filter { it.extension == "php" }
                         .flatMap { f: VirtualFile? -> VfsUtil.collectChildrenRecursively(f!!) }
                         .mapNotNull { f: VirtualFile? -> VcsFileUtil.getRelativeFilePath(f, projectBasePath) }
                         .toList()
-                        .joinToString(" ")
 
 
-                    val commandLine = GeneralCommandLine("./vendor/bin/ecs", "check", "--fix", *(arrayOf(files)))
+                    val commandLine = GeneralCommandLine("./vendor/bin/ecs", "check", "--fix")
+
+                    files.forEach {
+                        commandLine.addParameter(it)
+                    }
 
                     commandLine.withWorkDirectory(project.basePath)
                     val handler = CapturingProcessHandler(commandLine)
